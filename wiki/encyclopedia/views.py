@@ -8,3 +8,9 @@ def index(request):
         "entries": util.list_entries()
     })
 
+def wiki(request, entry):
+    print(util.get_entry(entry))
+    return render(request, "encyclopedia/wiki.html", {
+        "entry": util.get_entry(entry.capitalize()),
+        "title": entry.capitalize()
+    })
