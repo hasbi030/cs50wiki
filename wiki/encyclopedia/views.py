@@ -4,6 +4,12 @@ from . import util
 
 
 def index(request):
+    query = request.GET.get("q")
+    if query != None:
+        return render(request, "encyclopedia/wiki.html", {
+            "entry": util.get_entry(query),
+            "title": query.capitalize()
+    })
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
