@@ -28,3 +28,8 @@ def wiki(request, entry):
     })
 
 
+def add(request):
+    return render(request, "encyclopedia/add.html")
+
+def random(request):
+    return render(request, "encyclopedia/random.html")
