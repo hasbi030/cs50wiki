@@ -5,7 +5,15 @@
 {% endblock %}
 
 {% block body %}
-    
-<h1>SOMETHING</h1>
-    
+    {% if message == "" %}
+        <h1>Create New Page</h1>
+    {% else %}
+        <h1 style="color:red">This Page Already Exists</h1>
+    {% endif %}
+    <form action="{% url 'add' %}" method="post">
+        {% csrf_token %}
+        {{form}}
+        <input type="submit" value="Submit">
+    </form>
+
 {% endblock %}
