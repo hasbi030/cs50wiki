@@ -9,8 +9,16 @@ def index(request):
     })
 
 def wiki(request, entry):
-    
-    return render(request, "encyclopedia/wiki.html", {
-        "entry": util.get_entry(entry),
-        "title": entry.capitalize()
+    query = request.GET.get("q")
+    if query == None:
+        return render(request, "encyclopedia/wiki.html", {
+            "entry": util.get_entry(entry),
+            "title": entry.capitalize()
     })
+    else:
+        return render(request, "encyclopedia/wiki.html", {
+            "entry": util.get_entry(query),
+            "title": query.capitalize()
+    })
+
+
