@@ -6,8 +6,8 @@ from . import util
 
 
 class NewWikiEntry(forms.Form):
-    title = forms.CharField(label="Title")
-    content = forms.CharField(widget=forms.Textarea, label="Content")
+    title = forms.CharField(widget=forms.TextInput(attrs={'class': "form-t", "required style":"display:block"}))
+    content = forms.CharField(widget=forms.Textarea(attrs={'class': "form-c", "required style":"display:block"}))
 
 def index(request):
     return render(request, "encyclopedia/index.html", {
@@ -17,7 +17,7 @@ def index(request):
 def entry(request, title):
     content = util.get_entry(title)
     if content == None:
-        content = "##Page Does not Exist"
+        content = "# Requested Page was not Found"
     content = markdown2.markdown(content)
     return render(request, "encyclopedia/entry.html",{
         "content": content,
@@ -38,7 +38,7 @@ def search(request):
 
 def add(request):
     if request.method == "POST":
-        form = NewWikiEntry(request.POST)
+        form = NewWikiEntry(request.POST, auto_id=False)
         if form.is_valid():
             title = form.cleaned_data["title"]
             content = form.cleaned_data["content"]
@@ -51,9 +51,11 @@ def add(request):
             else:
                 util.save_entry(title, content)
                 return redirect('entry', title=title)
-    return render(request, "encyclopedia/add.html",{
-        "form": NewWikiEntry,
-        "message": ""
+    else:
+        form = NewWikiEntry(auto_id=False)
+        return render(request, "encyclopedia/add.html",{
+            "form": form,
+            "message": ""
     })
 def edit(request, title):
     if request.method == "POST":

@@ -8,7 +8,7 @@ Edit: {{ title }}
     <h1>Edit {{ title }} page</h1>
     <form action="{% url 'edit' title %}" method="POST">
         {% csrf_token %}
-        <textarea name="content" id="editText" cols="30" rows="10">{{ content }}</textarea>
+        <textarea class="form-c" name="content" id="editText" cols="30" rows="10">{{ content }}</textarea>
         <input type="submit" >
     </form>
 {% endblock %}
