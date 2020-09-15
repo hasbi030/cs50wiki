@@ -4,6 +4,14 @@ from django.core.files.base import ContentFile
 from django.core.files.storage import default_storage
 
 
+def search(query):
+    """
+    Returns a list of all names of encyclopedia entries containing the search query
+    """
+    _, filenames = default_storage.listdir("entries")
+    return list(sorted(re.sub(r"\.md$", "", filename)
+                for filename in filenames if filename.endswith(".md") and query in filename.lower()))
+
 def list_entries():
     """
     Returns a list of all names of encyclopedia entries.
@@ -35,3 +43,4 @@ def get_entry(title):
         return f.read().decode("utf-8")
     except FileNotFoundError:
         return None
+

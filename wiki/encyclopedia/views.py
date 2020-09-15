@@ -1,5 +1,6 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django import forms
+from markdown2 import markdown
 
 from . import util
 
@@ -8,29 +9,31 @@ class NewWikiEntry(forms.Form):
     content = forms.CharField(widget=forms.Textarea, label="Content")
 
 def index(request):
-    query = request.GET.get("q")
-    if query != None:
-        return render(request, "encyclopedia/wiki.html", {
-            "entry": util.get_entry(query),
-            "title": query.capitalize()
-    })
     return render(request, "encyclopedia/index.html", {
         "entries": util.list_entries()
     })
 
-def wiki(request, entry):
-    query = request.GET.get("q")
-    if query == None:
-        return render(request, "encyclopedia/wiki.html", {
-            "entry": util.get_entry(entry),
-            "title": entry.capitalize()
-    })
-    else:
-        return render(request, "encyclopedia/wiki.html", {
-            "entry": util.get_entry(query),
-            "title": query.capitalize()
+def entry(request, title):
+    content = util.get_entry(title)
+    if content == None:
+        content = "##Page Not Found"
+    content = markdown(content)
+    return render(request, "encyclopedia/entry.html",{
+        "content": content,
+        "entry": title
     })
 
+def search(request):
+    query = request.GET.get('q')
+
+    if query in util.list_entries():
+        return redirect("entry", title=query)
+    
+    return render(request, "encyclopedia/search.html",{
+        "entries": util.search(query), 
+        "query": query
+    })
+    
 
 def add(request):
     if request.method == "POST":
@@ -40,15 +43,15 @@ def add(request):
             content = form.cleaned_data["content"]
             
             if util.get_entry(title) != None:
-                print("it already exists")
                 return render(request, "encyclopedia/add.html", {
                     "form": form,
                     "message": "This Title is used on Another Page"
                 })
             else:
                 util.save_entry(title, content)
+                entry = markdown(util.get_entry(title))
                 return render(request,"encyclopedia/wiki.html",{
-                    "entry": util.get_entry(title),
+                    "entry": entry,
                     "title": title
                 })
     return render(request, "encyclopedia/add.html",{
