@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
 from django import forms
-from markdown2 import markdown
+import markdown2
 import random
 from . import util
+
 
 class NewWikiEntry(forms.Form):
     title = forms.CharField(label="Title")
@@ -17,7 +18,7 @@ def entry(request, title):
     content = util.get_entry(title)
     if content == None:
         content = "##Page Does not Exist"
-    content = markdown(content)
+    content = markdown2.markdown(content)
     return render(request, "encyclopedia/entry.html",{
         "content": content,
         "title": title
@@ -49,11 +50,7 @@ def add(request):
                 })
             else:
                 util.save_entry(title, content)
-                content = markdown(util.get_entry(title))
-                return render(request,"encyclopedia/entry.html",{
-                    "content": content,
-                    "title": title
-                })
+                return redirect('entry', title=title)
     return render(request, "encyclopedia/add.html",{
         "form": NewWikiEntry,
         "message": ""
