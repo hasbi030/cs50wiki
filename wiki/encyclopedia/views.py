@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from django import forms
 from markdown2 import markdown
-
+import random
 from . import util
 
 class NewWikiEntry(forms.Form):
@@ -59,5 +59,8 @@ def add(request):
         "message": ""
     })
 
-def random(request):
-    return render(request, "encyclopedia/random.html")
+def random_query(request):
+    entries = util.list_entries()
+    length = len(entries)-1
+    query = entries[random.randint(0, length)]
+    return redirect("entry", title=query)
