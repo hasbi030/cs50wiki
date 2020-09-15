@@ -16,11 +16,11 @@ def index(request):
 def entry(request, title):
     content = util.get_entry(title)
     if content == None:
-        content = "##Page Not Found"
+        content = "##Page Does not Exist"
     content = markdown(content)
     return render(request, "encyclopedia/entry.html",{
         "content": content,
-        "entry": title
+        "title": title
     })
 
 def search(request):
@@ -49,16 +49,27 @@ def add(request):
                 })
             else:
                 util.save_entry(title, content)
-                entry = markdown(util.get_entry(title))
-                return render(request,"encyclopedia/wiki.html",{
-                    "entry": entry,
+                content = markdown(util.get_entry(title))
+                return render(request,"encyclopedia/entry.html",{
+                    "content": content,
                     "title": title
                 })
     return render(request, "encyclopedia/add.html",{
         "form": NewWikiEntry,
         "message": ""
     })
-
+def edit(request, title):
+    if request.method == "POST":
+        content = request.POST.get('content')
+        print(content)
+        util.save_entry(title, content)
+        return redirect("entry", title=title)
+    else:
+        content = util.get_entry(title)
+        return render(request, "encyclopedia/edit.html", {
+            "title":title,
+            "content":content
+        })
 def random_query(request):
     entries = util.list_entries()
     length = len(entries)-1
